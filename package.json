@@ -1,0 +1,21 @@
+{
+  "name": "placewise",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/web",
+    "apps/mobile",
+    "packages/shared"
+  ],
+  "scripts": {
+    "dev:web": "yarn workspace @placewise/web dev",
+    "dev:mobile": "yarn workspace @placewise/mobile start",
+    "build:web": "yarn workspace @placewise/web build",
+    "build:shared": "yarn workspace @placewise/shared build",
+    "type-check": "yarn workspaces run type-check"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "packageManager": "yarn@1.22.22"
+}

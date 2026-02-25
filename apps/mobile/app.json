@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "Placewise",
+    "slug": "placewise",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#4f46e5"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "io.placewise.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Placewise uses your location to show nearby places."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#4f46e5"
+      },
+      "package": "io.placewise.app",
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow Placewise to use your location to show nearby places."
+        }
+      ]
+    ],
+    "scheme": "placewise",
+    "extra": {
+      "apiUrl": "http://localhost:8000",
+      "googleClientId": ""
+    }
+  }
+}
