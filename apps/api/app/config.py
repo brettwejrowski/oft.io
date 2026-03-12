@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     jwt_secret: str = "change-me"
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 10080  # 7 days
-    cors_origins: list[str] = ["http://localhost:5173", "http://localhost:8081"]
+    cors_origins: str = "http://localhost:5173,http://localhost:8081"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
