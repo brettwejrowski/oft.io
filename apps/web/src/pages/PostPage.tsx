@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { usePost, useComments, useCreateComment, useVote } from "@placewise/shared";
+import { usePost, useComments, useCreateComment, useVote, useMe } from "@placewise/shared";
 import type { Comment } from "@placewise/shared";
+import { useAuthDialog } from "../contexts/AuthContext";
 
 function CommentItem({ comment }: { comment: Comment }) {
   return (
@@ -21,13 +22,21 @@ export default function PostPage() {
   const { data: comments = [] } = useComments(postId);
   const vote = useVote(postId);
   const createComment = useCreateComment(postId);
+  const { data: user } = useMe();
+  const { openAuthDialog } = useAuthDialog();
   const [commentBody, setCommentBody] = useState("");
 
   if (isLoading) return <div className="p-8 text-gray-500">Loading…</div>;
   if (!post) return <div className="p-8 text-red-500">Post not found.</div>;
 
+  const handleVote = (value: 1 | -1) => {
+    if (!user) { openAuthDialog(); return; }
+    vote.mutate(value);
+  };
+
   const handleSubmitComment = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) { openAuthDialog(); return; }
     if (!commentBody.trim()) return;
     createComment.mutate({ body: commentBody }, { onSuccess: () => setCommentBody("") });
   };
@@ -38,9 +47,9 @@ export default function PostPage() {
       <div className="bg-white border border-gray-200 rounded-lg p-5 mb-6">
         <div className="flex gap-4">
           <div className="flex flex-col items-center gap-1">
-            <button onClick={() => vote.mutate(1)} className="text-gray-400 hover:text-indigo-600 text-xl">▲</button>
+            <button onClick={() => handleVote(1)} className="text-gray-400 hover:text-indigo-600 text-xl">▲</button>
             <span className="font-bold text-gray-800">{post.score}</span>
-            <button onClick={() => vote.mutate(-1)} className="text-gray-400 hover:text-red-500 text-xl">▼</button>
+            <button onClick={() => handleVote(-1)} className="text-gray-400 hover:text-red-500 text-xl">▼</button>
           </div>
           <div className="flex-1">
             <h1 className="text-xl font-bold text-gray-900 mb-2">{post.title}</h1>
@@ -68,15 +77,17 @@ export default function PostPage() {
           <textarea
             className="w-full border border-gray-300 rounded p-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-indigo-500"
             rows={3}
-            placeholder="Add a comment…"
+            placeholder={user ? "Add a comment…" : "Sign in to comment…"}
             value={commentBody}
             onChange={(e) => setCommentBody(e.target.value)}
+            onClick={!user ? () => openAuthDialog() : undefined}
+            readOnly={!user}
           />
           <button
             type="submit"
             className="mt-2 bg-indigo-600 text-white text-sm px-4 py-1.5 rounded hover:bg-indigo-700"
           >
-            Comment
+            {user ? "Comment" : "Sign in to comment"}
           </button>
         </form>
 

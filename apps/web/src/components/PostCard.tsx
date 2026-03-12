@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { useVote } from "@placewise/shared";
+import { useVote, useMe } from "@placewise/shared";
 import type { Post } from "@placewise/shared";
+import { useAuthDialog } from "../contexts/AuthContext";
 
 interface Props {
   post: Post;
@@ -8,6 +9,16 @@ interface Props {
 
 export default function PostCard({ post }: Props) {
   const vote = useVote(post.id);
+  const { data: user } = useMe();
+  const { openAuthDialog } = useAuthDialog();
+
+  const handleVote = (value: 1 | -1) => {
+    if (!user) {
+      openAuthDialog();
+      return;
+    }
+    vote.mutate(value);
+  };
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
@@ -15,14 +26,14 @@ export default function PostCard({ post }: Props) {
         {/* Voting */}
         <div className="flex flex-col items-center gap-1 text-gray-500">
           <button
-            onClick={() => vote.mutate(1)}
+            onClick={() => handleVote(1)}
             className="hover:text-indigo-600 text-lg leading-none"
           >
             ▲
           </button>
           <span className="text-sm font-semibold text-gray-700">{post.score}</span>
           <button
-            onClick={() => vote.mutate(-1)}
+            onClick={() => handleVote(-1)}
             className="hover:text-red-500 text-lg leading-none"
           >
             ▼

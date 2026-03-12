@@ -51,6 +51,7 @@ export interface Comment {
 export interface TokenResponse {
   access_token: string;
   token_type: string;
+  is_new_user: boolean;
 }
 
 // Request bodies

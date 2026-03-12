@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import { LatLng } from "leaflet";
-import { useCommunities, useCreatePost } from "@placewise/shared";
+import { useCommunities, useCreatePost, useMe } from "@placewise/shared";
+import { useAuthDialog } from "../contexts/AuthContext";
 
 function LocationPicker({ onSelect }: { onSelect: (latlng: LatLng) => void }) {
   useMapEvents({ click: (e) => onSelect(e.latlng) });
@@ -11,6 +12,8 @@ function LocationPicker({ onSelect }: { onSelect: (latlng: LatLng) => void }) {
 
 export default function SubmitPage() {
   const navigate = useNavigate();
+  const { data: user } = useMe();
+  const { openAuthDialog } = useAuthDialog();
   const { data: communities = [] } = useCommunities();
   const [communitySlug, setCommunitySlug] = useState("");
   const [title, setTitle] = useState("");
@@ -24,6 +27,7 @@ export default function SubmitPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) { openAuthDialog(); return; }
     if (!latlng || !selectedCommunity) return;
 
     createPost.mutate(

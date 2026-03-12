@@ -52,6 +52,11 @@ export const authApi = {
       body: JSON.stringify({ token }),
     }),
   me: () => request<User>("/auth/me"),
+  setUsername: (username: string) =>
+    request<User>("/auth/me/username", {
+      method: "PATCH",
+      body: JSON.stringify({ username }),
+    }),
 };
 
 // Communities

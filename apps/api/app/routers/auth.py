@@ -8,7 +8,7 @@ from app.config import settings
 from app.database import get_db
 from app.models.user import User
 from app.schemas.auth import GoogleAuthRequest, TokenResponse
-from app.schemas.user import UserRead
+from app.schemas.user import UserRead, UsernameUpdate
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -40,7 +40,8 @@ async def google_auth(body: GoogleAuthRequest, db: AsyncSession = Depends(get_db
     result = await db.execute(select(User).where(User.google_sub == google_sub))
     user = result.scalar_one_or_none()
 
-    if user is None:
+    is_new_user = user is None
+    if is_new_user:
         # Derive a username from the email prefix
         base_username = email.split("@")[0][:45].lower().replace(".", "_")
         username = base_username
@@ -63,9 +64,28 @@ async def google_auth(body: GoogleAuthRequest, db: AsyncSession = Depends(get_db
         await db.commit()
         await db.refresh(user)
 
-    return TokenResponse(access_token=create_access_token(user.id))
+    return TokenResponse(access_token=create_access_token(user.id), is_new_user=is_new_user)
 
 
 @router.get("/me", response_model=UserRead)
 async def get_me(current_user: User = Depends(get_current_user)):
+    return current_user
+
+
+@router.patch("/me/username", response_model=UserRead)
+async def update_username(
+    body: UsernameUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Update the current user's username (must be unique, 3-50 chars, lowercase alphanumeric + underscores)."""
+    existing = await db.execute(
+        select(User).where(User.username == body.username, User.id != current_user.id)
+    )
+    if existing.scalar_one_or_none() is not None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already taken")
+
+    current_user.username = body.username
+    await db.commit()
+    await db.refresh(current_user)
     return current_user

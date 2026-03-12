@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, Field
 
 
 class UserRead(BaseModel):
@@ -11,3 +11,7 @@ class UserRead(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class UsernameUpdate(BaseModel):
+    username: str = Field(..., min_length=3, max_length=50, pattern=r"^[a-z0-9_]+$")
