@@ -5,6 +5,7 @@ WORKDIR /app
 RUN pip install --no-cache-dir uv
 
 COPY pyproject.toml .
+COPY app ./app
 RUN uv pip install --system -e ".[dev]"
 
 COPY . .

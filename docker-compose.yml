@@ -38,16 +38,19 @@ services:
 
   web:
     build:
-      context: ./apps/web
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./apps/web/Dockerfile
     restart: unless-stopped
     ports:
       - "5173:5173"
     environment:
       VITE_API_URL: http://localhost:8000
+    working_dir: /app/apps/web
     volumes:
-      - ./apps/web:/app
+      - ./apps/web:/app/apps/web
+      - ./packages/shared:/app/packages/shared
       - /app/node_modules
+      - /app/apps/web/node_modules
     command: yarn dev --host 0.0.0.0
 
 volumes:
