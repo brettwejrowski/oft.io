@@ -1,0 +1,17 @@
+{
+	"/": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/c/[slug]": [
+		"src/routes/c/[slug]/+page.ts",
+		"src/routes/+layout.ts"
+	],
+	"/post/[id]": [
+		"src/routes/post/[id]/+page.ts",
+		"src/routes/+layout.ts"
+	],
+	"/submit": [
+		"src/routes/+layout.ts"
+	]
+}

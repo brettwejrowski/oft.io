@@ -1,9 +1,25 @@
 {
-  "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "target": "ES2017",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "declaration": false,
     "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "removeComments": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "lib": ["ES2017", "ES2015.Promise"],
+    "baseUrl": ".",
     "paths": {
-      "@placewise/shared": ["../../packages/shared/src/index.ts"]
+      "@placewise/shared": ["../../packages/shared/src/index.ts"],
+      "~/*": ["app/*"]
     }
-  }
+  },
+  "include": ["./app/**/*.ts", "./app/**/*.svelte", "references.d.ts"],
+  "exclude": ["node_modules", "platforms"]
 }
