@@ -9,9 +9,9 @@ import type {
   TokenResponse,
   User,
   Vote,
-} from "./types";
+} from './types';
 
-let BASE_URL = "http://localhost:8000";
+let BASE_URL = 'http://localhost:8000';
 let authToken: string | null = null;
 
 export function configure(options: { baseUrl?: string; token?: string | null }) {
@@ -19,22 +19,16 @@ export function configure(options: { baseUrl?: string; token?: string | null }) 
   if (options.token !== undefined) authToken = options.token;
 }
 
-async function request<T>(
-  path: string,
-  options: RequestInit = {}
-): Promise<T> {
+async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
   };
   if (authToken) {
-    headers["Authorization"] = `Bearer ${authToken}`;
+    headers['Authorization'] = `Bearer ${authToken}`;
   }
 
-  const res = await fetch(`${BASE_URL}/api/v1${path}`, {
-    ...options,
-    headers,
-  });
+  const res = await fetch(`${BASE_URL}/api/v1${path}`, { ...options, headers });
 
   if (!res.ok) {
     const detail = await res.text();
@@ -44,53 +38,50 @@ async function request<T>(
   return res.json() as Promise<T>;
 }
 
-// Auth
+// ── Auth ─────────────────────────────────────────────────────────────────────
 export const authApi = {
-  googleLogin: (token: string) =>
-    request<TokenResponse>("/auth/google", {
-      method: "POST",
+  /** Exchange an Auth0 access token for a Placewise JWT */
+  auth0Login: (token: string) =>
+    request<TokenResponse>('/auth/auth0', {
+      method: 'POST',
       body: JSON.stringify({ token }),
     }),
-  me: () => request<User>("/auth/me"),
+
+  /** Legacy Google OAuth ID token exchange */
+  googleLogin: (token: string) =>
+    request<TokenResponse>('/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ token }),
+    }),
+
+  me: () => request<User>('/auth/me'),
 };
 
-// Communities
+// ── Communities ───────────────────────────────────────────────────────────────
 export const communitiesApi = {
   list: (params?: { skip?: number; limit?: number }) => {
     const qs = new URLSearchParams(params as Record<string, string>).toString();
-    return request<Community[]>(`/communities${qs ? `?${qs}` : ""}`);
+    return request<Community[]>(`/communities${qs ? `?${qs}` : ''}`);
   },
   get: (slug: string) => request<Community>(`/communities/${slug}`),
   create: (input: CreateCommunityInput) =>
-    request<Community>("/communities", {
-      method: "POST",
-      body: JSON.stringify(input),
-    }),
+    request<Community>('/communities', { method: 'POST', body: JSON.stringify(input) }),
   listPosts: (slug: string, params?: { skip?: number; limit?: number }) => {
     const qs = new URLSearchParams(params as Record<string, string>).toString();
-    return request<Post[]>(`/communities/${slug}/posts${qs ? `?${qs}` : ""}`);
+    return request<Post[]>(`/communities/${slug}/posts${qs ? `?${qs}` : ''}`);
   },
   createPost: (slug: string, input: CreatePostInput) =>
-    request<Post>(`/communities/${slug}/posts`, {
-      method: "POST",
-      body: JSON.stringify(input),
-    }),
+    request<Post>(`/communities/${slug}/posts`, { method: 'POST', body: JSON.stringify(input) }),
 };
 
-// Posts
+// ── Posts ─────────────────────────────────────────────────────────────────────
 export const postsApi = {
   get: (id: number) => request<Post>(`/posts/${id}`),
   vote: (id: number, value: 1 | -1) =>
-    request<Vote>(`/posts/${id}/vote`, {
-      method: "POST",
-      body: JSON.stringify({ value }),
-    }),
+    request<Vote>(`/posts/${id}/vote`, { method: 'POST', body: JSON.stringify({ value }) }),
   listComments: (id: number) => request<Comment[]>(`/posts/${id}/comments`),
   createComment: (id: number, input: CreateCommentInput) =>
-    request<Comment>(`/posts/${id}/comments`, {
-      method: "POST",
-      body: JSON.stringify(input),
-    }),
+    request<Comment>(`/posts/${id}/comments`, { method: 'POST', body: JSON.stringify(input) }),
   nearby: (params: NearbyParams) => {
     const qs = new URLSearchParams(params as unknown as Record<string, string>).toString();
     return request<Post[]>(`/posts/nearby?${qs}`);

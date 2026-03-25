@@ -1,18 +1,12 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import path from "path";
+import { sveltekit } from '@sveltejs/kit/vite';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: {
-      "@placewise/shared": path.resolve(__dirname, "../../packages/shared/src/index.ts"),
-    },
-  },
+  plugins: [sveltekit()],
   server: {
     port: 5173,
     proxy: {
-      "/api": "http://localhost:8000",
+      '/api': 'http://localhost:8000',
     },
   },
 });

@@ -18,5 +18,8 @@ COPY apps/web ./apps/web
 
 WORKDIR /app/apps/web
 
+# Generate SvelteKit type definitions (.svelte-kit/tsconfig.json etc.)
+RUN yarn svelte-kit sync
+
 EXPOSE 5173
-CMD ["yarn", "dev", "--host", "0.0.0.0"]
+CMD ["yarn", "dev"]
